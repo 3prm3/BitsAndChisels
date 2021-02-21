@@ -2,6 +2,8 @@ package io.github.coolmineman.bitsandchisels;
 
 import java.util.Arrays;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.coolmineman.bitsandchisels.duck.CubeRenderStuff;
@@ -23,7 +25,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.BitSetVoxelSet;
@@ -42,12 +43,12 @@ public class BitsBlockEntity extends BlockEntity implements BlockEntityClientSer
     protected VoxelShape shape = VoxelShapes.fullCube();
     boolean fullcube = false;
 
-    public BitsBlockEntity() {
-        this(Blocks.AIR.getDefaultState());
+    public BitsBlockEntity(BlockPos pos, BlockState state) {
+        this(Blocks.AIR.getDefaultState(), pos, state);
     }
 
-    public BitsBlockEntity(BlockState fillState) {
-        this(new BlockState[16][16][16]);
+    public BitsBlockEntity(BlockState fillState, BlockPos pos, BlockState state) {
+        this(new BlockState[16][16][16],pos,state);
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 for (int k = 0; k < 16; k++) {
@@ -57,21 +58,21 @@ public class BitsBlockEntity extends BlockEntity implements BlockEntityClientSer
         }
     }
 
-    public BitsBlockEntity(BlockState[][][] states) {
-        super(BitsAndChisels.BITS_BLOCK_ENTITY);
+    public BitsBlockEntity(BlockState[][][] states, BlockPos pos, BlockState state) {
+        super(BitsAndChisels.BITS_BLOCK_ENTITY, pos, state);
         this.states = states;
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         BitNbtUtil.write3DBitArray(tag, states);
         return tag;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
-        super.fromTag(state, tag);
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
         BitNbtUtil.read3DBitArray(tag, states);
         rebuildShape();
     }
@@ -135,7 +136,7 @@ public class BitsBlockEntity extends BlockEntity implements BlockEntityClientSer
                 for (int k = 0; k < 16; k++) {
                     BlockState state = states[i][j][k];
                     if (!state.isAir()) {
-                        set.set(i, j, k, true, true);
+                        set.set(i, j, k);
                     }
                     if (firststate != state) {
                         fullcube = false;
@@ -165,7 +166,7 @@ public class BitsBlockEntity extends BlockEntity implements BlockEntityClientSer
     }
 
     @Environment(EnvType.CLIENT)
-    private void doQuad(QuadEmitter emitter, Vector3f tmp, Direction d, BlockState state, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
+    private void doQuad(QuadEmitter emitter, Vec3f tmp, Direction d, BlockState state, int minx, int miny, int minz, int maxx, int maxy, int maxz) {
         CubeRenderStuff cubeRenderStuff = CubeRenderStuff.of(state);
         for (int z = 0; z < cubeRenderStuff.getQuads(d.getId()).length; z++) {
             BakedQuad vanillaQuad = cubeRenderStuff.getQuads(d.getId())[z];
@@ -190,7 +191,7 @@ public class BitsBlockEntity extends BlockEntity implements BlockEntityClientSer
     protected void rebuildMesh() {
         MeshBuilder builder = RendererAccess.INSTANCE.getRenderer().meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
-        Vector3f tmp = new Vector3f();
+        Vec3f tmp = new Vec3f();
         boolean[][] used = new boolean[16][16];
 
         //X
@@ -314,14 +315,14 @@ public class BitsBlockEntity extends BlockEntity implements BlockEntityClientSer
 
     @Override
     public void fromClientTag(CompoundTag tag) {
-        fromTag(null, tag);
+        readNbt(tag);
         rebuildMesh();
         MinecraftClient.getInstance().worldRenderer.scheduleBlockRenders(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
     public CompoundTag toClientTag(CompoundTag tag) {
-        return toTag(tag);
+        return writeNbt(tag);
     }
 
     @Environment(EnvType.CLIENT)

@@ -6,10 +6,10 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import grondag.frex.api.Renderer;
-import grondag.frex.api.material.MaterialMap;
+//import grondag.frex.api.Renderer;
+//import grondag.frex.api.material.MaterialMap;
 import io.github.coolmineman.bitsandchisels.BitsAndChisels;
-import io.github.coolmineman.bitsandchisels.CanvasHelper;
+//import io.github.coolmineman.bitsandchisels.CanvasHelper;
 import io.github.coolmineman.bitsandchisels.duck.CubeRenderStuff;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
@@ -53,7 +53,7 @@ public class BlockStateMixin implements CubeRenderStuff {
                     BakedQuad quad = localquads[i];
                     if (BitsAndChisels.CANVAS) {
                         Sprite sprite = ((BakedQuadAccessor)quad).getSprite();
-                        materials[d.getId()][i] = CanvasHelper.getMaterial(thiz, sprite);
+//                        materials[d.getId()][i] = CanvasHelper.getMaterial(thiz, sprite);
                     } else {
                         materials[d.getId()][i] = RendererAccess.INSTANCE.getRenderer().materialFinder().blendMode(0, BlendMode.fromRenderLayer(RenderLayers.getBlockLayer(thiz))).find();
                     }

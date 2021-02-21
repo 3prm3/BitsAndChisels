@@ -36,6 +36,7 @@ public class DiamondChisel extends ToolItem {
         super(ToolMaterials.STONE, settings);
     }
 
+    @SuppressWarnings("deprecation")
     public void init() {
         ServerSidePacketRegistry.INSTANCE.register(PACKET_ID, (packetContext, attachedData) -> {
             BlockPos pos = attachedData.readBlockPos();
@@ -51,7 +52,7 @@ public class DiamondChisel extends ToolItem {
                     Optional<BlockState> oldstate = BitUtils.getBit(world, pos, x, y, z);
                     if (oldstate.isPresent() && BitUtils.setBit(world, pos, x, y, z, Blocks.AIR.getDefaultState())) {
                         BitUtils.update(world, pos);
-                        if (!oldstate.get().isAir()) player.inventory.offerOrDrop(world, BitUtils.getBitItemStack(oldstate.get()));
+                        if (!oldstate.get().isAir()) player.getInventory().offerOrDrop(BitUtils.getBitItemStack(oldstate.get()));
                     }
                 }
             });

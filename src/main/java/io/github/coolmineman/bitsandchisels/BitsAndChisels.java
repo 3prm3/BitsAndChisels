@@ -1,5 +1,7 @@
 package io.github.coolmineman.bitsandchisels;
 
+import io.github.coolmineman.bitsandchisels.chisel.GoldChisel;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +34,7 @@ public class BitsAndChisels implements ModInitializer {
 	public static final BlockItem BITS_BLOCK_ITEM = new BlockItem(BITS_BLOCK, new Item.Settings());
 	public static final DiamondChisel DIAMOND_CHISEL = new DiamondChisel(new Item.Settings());
 	public static final IronChisel IRON_CHISEL = new IronChisel(new Item.Settings());
+	public static final GoldChisel GOLD_CHISEL = new GoldChisel(new Item.Settings());
 	public static final WrenchItem WRENCH_ITEM = new WrenchItem(new Item.Settings());
 	public static final Blueprint BLUEPRINT = new Blueprint(new Item.Settings().maxCount(1));
 	public static BlockEntityType<BitsBlockEntity> BITS_BLOCK_ENTITY;
@@ -43,6 +46,7 @@ public class BitsAndChisels implements ModInitializer {
 		.icon(() -> new ItemStack(DIAMOND_CHISEL))
 		.appendItems(stacks -> {
 			stacks.add(new ItemStack(DIAMOND_CHISEL));
+			stacks.add(new ItemStack(GOLD_CHISEL));
 			stacks.add(new ItemStack(IRON_CHISEL));
 			stacks.add(new ItemStack(WRENCH_ITEM));
 			stacks.add(new ItemStack(BLUEPRINT));
@@ -56,12 +60,14 @@ public class BitsAndChisels implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 		Registry.register(Registry.BLOCK, new Identifier(MODID, "bits_block"), BITS_BLOCK);
-		BITS_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "bitsandchisels:bits_block_entity", BlockEntityType.Builder.create(BitsBlockEntity::new, BITS_BLOCK).build(null));
+		BITS_BLOCK_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "bitsandchisels:bits_block_entity", FabricBlockEntityTypeBuilder.create(BitsBlockEntity::new, BITS_BLOCK).build(null));
 		Registry.register(Registry.ITEM, new Identifier(MODID, "bits_block"), BITS_BLOCK_ITEM);
 		Registry.register(Registry.ITEM, new Identifier(MODID, "diamond_chisel"), DIAMOND_CHISEL);
 		DIAMOND_CHISEL.init();
 		Registry.register(Registry.ITEM, new Identifier(MODID, "iron_chisel"), IRON_CHISEL);
 		IRON_CHISEL.init();
+		Registry.register(Registry.ITEM, new Identifier(MODID, "gold_chisel"), GOLD_CHISEL);
+		GOLD_CHISEL.init();
 		Registry.register(Registry.ITEM, new Identifier(MODID, "bit_item"), BIT_ITEM);
 		BIT_ITEM.init();
 		Registry.register(Registry.ITEM, new Identifier(MODID, "wrench"), WRENCH_ITEM);
